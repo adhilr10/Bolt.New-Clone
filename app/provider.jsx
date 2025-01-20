@@ -1,6 +1,8 @@
 "use client";
 
+import AppSidebar from "@/components/custom/AppSidebar";
 import Header from "@/components/custom/Header";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { MessageContext } from "@/context/MessagesContext";
 import { UserDetailContext } from "@/context/userDetailContext";
 import { api } from "@/convex/_generated/api";
@@ -17,38 +19,44 @@ function Provider({ children }) {
   useEffect(() => {
     isAuthenticated();
   }, []);
+
   const isAuthenticated = async () => {
     if (typeof window !== undefined) {
       const user = JSON.parse(localStorage.getItem("user"));
-      //Fetch the database
       const result = await convex.query(api.users.GetUser, {
         email: user?.email,
       });
-      setUserDetail(result)
-      console.log(result);
-      
+      setUserDetail(result);
     }
   };
+
   return (
-    <div>
-      <GoogleOAuthProvider
-        clientId={process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID_KEY}
-      >
-        <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
-          <MessageContext.Provider value={{ messages, setMessages }}>
-            <NextThemesProvider
-              attribute="class"
-              defaultTheme="dark"
-              enableSystem
-              disableTransitionOnChange
-            >
-              <Header />
-              {children}
-            </NextThemesProvider>
-          </MessageContext.Provider>
-        </UserDetailContext.Provider>
-      </GoogleOAuthProvider>
-    </div>
+    <GoogleOAuthProvider
+      clientId={process.env.NEXT_PUBLIC_GOOGLE_AUTH_CLIENT_ID_KEY}
+    >
+      <UserDetailContext.Provider value={{ userDetail, setUserDetail }}>
+        <MessageContext.Provider value={{ messages, setMessages }}>
+          <NextThemesProvider
+            attribute="class"
+            defaultTheme="dark"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <div className="flex min-h-screen">
+              <SidebarProvider defaultOpen={false}>
+                <AppSidebar />
+                <div className="flex-1">
+                  <Header />
+                  <main className="w-full">
+                    {children}
+                  </main>
+                </div>
+              </SidebarProvider>
+            </div>
+          </NextThemesProvider>
+        </MessageContext.Provider>
+      </UserDetailContext.Provider>
+    </GoogleOAuthProvider>
   );
 }
 

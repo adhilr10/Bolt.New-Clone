@@ -12,6 +12,7 @@ import Lookup from "@/data/Lookup";
 import axios from "axios";
 import Prompt from "@/data/Prompt";
 import { api } from "@/convex/_generated/api";
+import { useSidebar } from "../ui/sidebar";
 
 function ChatView() {
   const { id } = useParams();
@@ -20,9 +21,10 @@ function ChatView() {
   const { userDetail, setUserDetail } = useContext(UserDetailContext);
   const [userInput, setUserInput] = useState();
   const [loading, setLoading] = useState(false);
-  
+  const { toggleSidebar } = useSidebar();
+
   const UpdateWorkspace = useMutation(api.workspace.UpdateWorkspace);
-  
+
   useEffect(() => {
     id && getWorkSpaceData();
   }, [id]);
@@ -75,7 +77,7 @@ function ChatView() {
 
   return (
     <div className="relative h-[80vh] flex flex-col">
-      <div className="flex-1 overflow-y-auto ">
+      <div className="flex-1 overflow-y-scroll scrollbar-hide px-5 ">
         {messages?.map((msg, index) => (
           <div
             key={index}
@@ -91,7 +93,9 @@ function ChatView() {
                 className="rounded-full"
               />
             )}
-            <ReactMarkdown className="flex flex-col">{msg?.content}</ReactMarkdown>
+            <ReactMarkdown className="flex flex-col">
+              {msg?.content}
+            </ReactMarkdown>
           </div>
         ))}
         {loading && (
@@ -106,29 +110,40 @@ function ChatView() {
       </div>
 
       {/* input Section */}
-
-      <div
-        className="p-4 border rounded-xl max-w-lg w-full mt-3"
-        style={{
-          backgroundColor: Colors.BACKGROUND,
-        }}
-      >
-        <div className="flex gap-2">
-          <textarea
-            value={userInput}
-            placeholder={Lookup.INPUT_PLACEHOLDER}
-            className="outline-none bg-transparent w-full h-24 max-h-52 resize-none"
-            onChange={(event) => setUserInput(event.target.value)}
+      <div className="flex gap-2 items-end">
+        {userDetail && (
+          <Image
+            className="rounded-full cursor-pointer"
+            onClick={toggleSidebar}
+            src={userDetail?.picture}
+            alt="user"
+            width={30}
+            height={30}
           />
-          {userInput && (
-            <ArrowRight
-              onClick={() => onGenerate(userInput)}
-              className="bg-blue-500 p-2 h-10 w-10 rounded-md cursor-pointer"
+        )}
+        <div
+          className="p-4 border rounded-xl max-w-lg w-full mt-3"
+          style={{
+            backgroundColor: Colors.BACKGROUND,
+          }}
+        >
+          <div className="flex gap-2">
+            <textarea
+              value={userInput}
+              placeholder={Lookup.INPUT_PLACEHOLDER}
+              className="outline-none bg-transparent w-full h-24 max-h-52 resize-none"
+              onChange={(event) => setUserInput(event.target.value)}
             />
-          )}
-        </div>
-        <div>
-          <Link className="h-5 w-5" />
+            {userInput && (
+              <ArrowRight
+                onClick={() => onGenerate(userInput)}
+                className="bg-blue-500 p-2 h-10 w-10 rounded-md cursor-pointer"
+              />
+            )}
+          </div>
+          <div>
+            <Link className="h-5 w-5" />
+          </div>
         </div>
       </div>
     </div>
