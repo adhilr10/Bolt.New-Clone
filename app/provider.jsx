@@ -12,7 +12,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { useEffect, useState } from "react";
 
 function Provider({ children }) {
-  const [messages, setMessages] = useState();
+  const [messages, setMessages] = useState([]);
   const [userDetail, setUserDetail] = useState();
   const convex = useConvex();
 
