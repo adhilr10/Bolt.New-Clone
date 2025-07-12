@@ -34,7 +34,7 @@ function ChatView() {
       workspaceId: id,
     });
     console.log(result);
-    setMessages(result?.messages);
+    setMessages(Array.isArray(result?.messages) ? result.messages : []);
     // const UpdateFiles = useMutation(api.workspace.UpdateWorkspace);
   };
   useEffect(() => {
@@ -78,7 +78,7 @@ function ChatView() {
   return (
     <div className="relative h-[80vh] flex flex-col">
       <div className="flex-1 overflow-y-scroll scrollbar-hide px-5 ">
-        {messages?.map((msg, index) => (
+        {Array.isArray(messages) && messages.map((msg, index) => (
           <div
             key={index}
             className="p-3 rounded-lg mb-2 flex gap-2 items-start leading-7"
